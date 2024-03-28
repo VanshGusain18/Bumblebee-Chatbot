@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bumblebee Chatbot</title>
+<link rel="icon"  href="WhatsApp Image 2024-03-02 at 13.46.02_f497065d.jpg" type="image/x-icon">
+<style>
+  body {
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: url('https://img.freepik.com/free-vector/modern-soft-yellow-watercolor-background-design_1055-8911.jpg');
+    background-size: cover;
+  }
+  
+  #chat-container {
+    background-image: url('https://media.istockphoto.com/id/1290745035/vector/bumblebee-seamless-pattern.jpg?s=612x612&w=0&k=20&c=3F9zKrA9MGhHvlJbF-Cwo2FM3VpxflbC4kO2o9TDj10=');
+    background-size: cover;
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    border: 20px solid white;
+  }
+  
+  h1 {
+    background-color: #FFE17F;
+    color: black;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 5px;
+    border: 5px solid white;
+    border-radius: 10%;
+    position: relative;
+    bottom: 20px;
+  }
+  
+  #chat-history {
+    height: 300px;
+    overflow-y: scroll;
+  }
+  
+  .user-message {
+    text-align: right;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    /* border: 2px solid black; */
+  }
+  
+  .bot-message {
+    text-align: left;
+    padding: 10px;
+    background-color: #F9E67F;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    border: 2px solid white;
+  }
+  
+  form {
+    display: flex;
+  }
+  
+  input {
+    flex-grow: 1;
+    margin-right: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  button {
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  #loader {
+  display: none; /* Hide by default */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+  </style>
+</head>
+<body>
+  <div id="chat-container">
+  <h1>Bumblebee</h1>
+  <div id="chat-history"></div>
+  <form id="chat-form">
+    <input type="text" id="user-input" placeholder="Enter your message">
+    <button type="submit">Send</button>
+  </form>
+</div>
+<div id="loader">
+  <img src="https://i.pinimg.com/originals/02/ce/79/02ce7945c01a4d62f78e480ca9c51f00.gif" width="150px" alt="Loading...">
+</div>
+  <script>
+    const chatHistory = document.getElementById('chat-history');
+    const userInput = document.getElementById('user-input');
+    const form = document.getElementById('chat-form');
+
+    async function sendMessage() {
+      const userMessage = userInput.value;
+      userInput.value = ''; // Clear input field
+      console.log(userMessage)
+      try {
+        const response = await fetch('/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userInput: userMessage }),
+        });
+
+        const data = await response.json();
+        console.log(data)
+        const botMessage = data.response;
+        console.log(botMessage)
+        // Add chat message to the chat history
+        chatHistory.innerHTML += `<div class="user-message">${userMessage}</div>`;
+        chatHistory.innerHTML += `<div class="bot-message">${botMessage}</div>`;
+
+        // Scroll to the bottom of the chat history
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+      } catch (error) {
+        console.error('Error:', error);
+        // Handle errors gracefully, e.g., display an error message to the user
+      }
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevent form submission
+      const loader = document.getElementById('loader');
+      loader.style.display = 'block'; // Show the loader
+      sendMessage().finally(() => {
+      loader.style.display = 'none'; // Hide the loader after the message is sent
+    });;
+    });
+  </script>
+</body>
+</html>
